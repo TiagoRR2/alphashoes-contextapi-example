@@ -6,7 +6,7 @@ export const CartProvider = (props) => {
   const [cart, setCart] = useState(() => {
     const storagedCart = localStorage.getItem('@alphashoes:cart')
 
-    if(storagedCart) {
+    if (storagedCart) {
       return JSON.parse(storagedCart)
     }
 
@@ -14,51 +14,120 @@ export const CartProvider = (props) => {
   })
 
   const addProduct = useCallback(async (productId) => {
-    const copyCart = cart.slice()
+    try {
+      const copyCart = cart.slice()
 
-    const responseProduct = await fetch(`http://localhost:3333/products/${productId}`)
-    const product = await responseProduct.json()
+      const responseProduct = await fetch(`http://localhost:3333/products/${productId}`)
+      const product = await responseProduct.json()
+
+      const responseStock = await fetch(`http://localhost:3333/stock/${productId}`)
+      const stock = await responseStock.json()
+
+      const findProductInCartIndex = copyCart.findIndex(
+        cartProduct => cartProduct.id === productId
+      )
+
+      if (findProductInCartIndex > -1) {
+        const productInCart = copyCart[findProductInCartIndex]
+        const updatedAmount = productInCart.amount + 1;
+
+        if (stock.amount < updatedAmount) {
+          console.log('Quantidade solicitada fora de estoque.')
+          return;
+        }
+
+        copyCart[findProductInCartIndex] = {
+          ...productInCart,
+          amount: updatedAmount
+        }
+
+        localStorage.setItem('@alphashoes:cart', JSON.stringify(copyCart))
+
+        setCart(copyCart)
+
+        return;
+      }
+
+      if (stock.amount < 1) {
+        console.log('Quantidade solicitada fora de estoque.')
+        return;
+      }
+
+      copyCart.push({
+        ...product,
+        amount: 1
+      })
+
+      localStorage.setItem('@alphashoes:cart', JSON.stringify(copyCart))
+
+      setCart(copyCart)
+    } catch (error) {
+      console.log('Não foi possivel adicionar este produto.')
+    }
+  }, [cart])
+
+  const removeProduct = useCallback(productId => {
+    const copyCart = cart.slice()
 
     const findProductInCartIndex = copyCart.findIndex(
       cartProduct => cartProduct.id === productId
     )
 
-    if(findProductInCartIndex > -1) {
+    if (findProductInCartIndex < 0) {
+      console.log('Erro na remoção do produto')
+
+      return;
+    }
+
+    copyCart.splice(findProductInCartIndex, 1)
+    localStorage.setItem('@alphashoes:cart', JSON.stringify(copyCart))
+
+    setCart(copyCart)
+  }, [cart])
+
+  const updateProductAmount = useCallback(async (productId, amount) => {
+    try {
+      if(amount <= 0) {
+        return;
+      }
+
+      const responseStock = await fetch(`http://localhost:3333/stock/${productId}`)
+      const stock = await responseStock.json()
+
+      if(stock.amount < amount) {
+        console.log('Quantidade solicitada fora de estoque.')
+
+        return;
+      }
+
+      const copyCart = cart.slice()
+
+      const findProductInCartIndex = copyCart.findIndex(
+        cartProduct => cartProduct.id === productId
+      )
+
       const productInCart = copyCart[findProductInCartIndex]
-      const updatedAmount = productInCart.amount + 1;
 
       copyCart[findProductInCartIndex] = {
         ...productInCart,
-        amount: updatedAmount
+        amount,
       }
 
       localStorage.setItem('@alphashoes:cart', JSON.stringify(copyCart))
 
       setCart(copyCart)
 
-      return;
+    } catch (error) {
+      console.log('Erro ao atualizar quantidade do produto.')
     }
-
-    copyCart.push({
-      ...product,
-      amount: 1
-    })
-
-    localStorage.setItem('@alphashoes:cart', JSON.stringify(copyCart))
-
-    setCart(copyCart)
   }, [cart])
 
-  const removeProduct = useCallback(productId => {
-    console.log('removeProdct', productId)
-  }, [])
-
-  useEffect(() =>  {
-    console.log(cart)
+  useEffect(() => {
+    console.log("Carrinho: ",cart)
   }, [cart])
 
   return (
-    <CartContext.Provider value={{ cart, addProduct, removeProduct }}>
+    <CartContext.Provider value={{ cart, addProduct, removeProduct, updateProductAmount }}>
       {props.children}
     </CartContext.Provider>
   )

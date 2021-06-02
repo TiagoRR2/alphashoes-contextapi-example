@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { CartContext } from '../../providers/CartProvider';
 
+import { Container, Header, Main, ProductCard, ProductButton } from './styles'
+
 function Home() {
   const { addProduct } = useContext(CartContext)
   const [products, setProducts] = useState([])
@@ -23,8 +25,8 @@ function Home() {
   }, [])
 
   return (
-    <div>
-      <header>
+    <Container>
+      <Header>
         <div>
           <h1>Alphashoes</h1>
 
@@ -33,23 +35,29 @@ function Home() {
             <span>1 item</span>
           </div>
         </div>
-      </header>
+      </Header>
 
-      <main>
-        <ul>
-          {products.map(product => (
-            <li key={product?.id}>
-              <strong>{product?.title}</strong>
-              <span>R$ {product?.price}</span>
+      <Main>
+        <div>
+          <ul>
+            {products.map(product => (
+              <ProductCard key={product?.id}>
+                <img src={product?.image} alt={product.title} />
 
-              <button type="button" onClick={() => addProduct(product?.id)}>
-                Adicionar ao carrinho
-              </button>
-            </li>
-          ))}
-        </ul>
-      </main>
-    </div>
+                <div className="product-info">
+                  <strong>{product?.title}</strong>
+                  <span>R$ {product?.price}</span>
+                </div>
+
+                <ProductButton type="button" onClick={() => addProduct(product?.id)}>
+                  Adicionar ao carrinho
+                </ProductButton>
+              </ProductCard>
+            ))}
+          </ul>
+        </div>
+      </Main>
+    </Container>
   )
 }
 
