@@ -1,26 +1,6 @@
 import styled from 'styled-components'
 
-export const Container = styled.div``
-
-export const Main = styled.main`
-  width: 100%;
-
-  > div {
-    width: 100%;
-    max-width: 980px;
-    margin: 0 auto;
-  }
-
-  ul {
-    list-style: none;
-
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 24px;
-  }
-`
-
-export const ProductCard = styled.li`
+export const Container = styled.li`
   background: #fff;
 
   display: flex;
@@ -49,5 +29,4 @@ export const ProductCard = styled.li`
       font-size: 24px;
     }
   } 
-
 `

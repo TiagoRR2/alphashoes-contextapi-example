@@ -6,8 +6,10 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "axios": "^0.21.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-icons": "^4.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "styled-components": "^5.3.0",
@@ -39,6 +41,15 @@
     ]
   },
   "devDependencies": {
+    "axios-mock-adapter": "^1.19.0",
     "json-server": "^0.16.3"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/components/**/*.jsx",
+      "src/pages/**/*.jsx",
+      "src/providers/**/*.jsx",
+      "!src/providers/index.jsx"
+    ]
   }
 }

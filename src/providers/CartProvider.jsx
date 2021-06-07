@@ -1,4 +1,5 @@
 import React, { createContext, useState, useCallback, useEffect } from 'react'
+import api from '../services/api'
 
 export const CartContext = createContext({})
 
@@ -17,11 +18,8 @@ export const CartProvider = (props) => {
     try {
       const copyCart = cart.slice()
 
-      const responseProduct = await fetch(`http://localhost:3333/products/${productId}`)
-      const product = await responseProduct.json()
-
-      const responseStock = await fetch(`http://localhost:3333/stock/${productId}`)
-      const stock = await responseStock.json()
+      const { data: product } = await api.get(`/products/${productId}`)
+      const { data: stock } = await api.get(`/stock/${productId}`)
 
       const findProductInCartIndex = copyCart.findIndex(
         cartProduct => cartProduct.id === productId
@@ -87,14 +85,13 @@ export const CartProvider = (props) => {
 
   const updateProductAmount = useCallback(async (productId, amount) => {
     try {
-      if(amount <= 0) {
+      if (amount <= 0) {
         return;
       }
 
-      const responseStock = await fetch(`http://localhost:3333/stock/${productId}`)
-      const stock = await responseStock.json()
+      const { data: stock } = await api.get(`/stock/${productId}`)
 
-      if(stock.amount < amount) {
+      if (stock.amount < amount) {
         console.log('Quantidade solicitada fora de estoque.')
 
         return;
@@ -123,7 +120,7 @@ export const CartProvider = (props) => {
   }, [cart])
 
   useEffect(() => {
-    console.log("Carrinho: ",cart)
+    console.log("Carrinho: ", cart)
   }, [cart])
 
   return (

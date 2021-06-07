@@ -1,24 +1,19 @@
-import React, { useCallback, useContext } from 'react';
-import { CartContext } from '../../providers/CartProvider'
+import React from 'react';
+import { FiShoppingBag } from 'react-icons/fi'
+
+import { Container } from './styles'
 
 function Button(props) {
-  const { cart, addProduct, removeProduct } = useContext(CartContext)
-
-  const handleAddProduct = useCallback(() => {
-    addProduct('1')
-  }, [addProduct])
-
-  const handleRemoveProduct = useCallback(() => {
-    removeProduct('2')
-  }, [removeProduct])
-
-  console.log(cart)
-  
   return (
-    <>
-      <button onClick={handleAddProduct}>Adicionar produto</button>
-      <button onClick={handleRemoveProduct}>Remover produto </button>
-    </>
+    <Container {...props}>
+      <div>
+        <FiShoppingBag />
+      </div>
+
+      <span>
+        Adicionar ao carrinho
+      </span>
+    </Container>
   )
 }
 
